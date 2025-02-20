@@ -1,0 +1,31 @@
+/* Remover margens e padding, e definir altura para 100% */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #390b3b; /* Cor de fundo azul */
+}
+
+/* Garantir que a altura do conteúdo ocupe toda a tela */
+html, body, .container {
+    height: 100%;
+    padding-left: 10px; /* Adicionar um pouco de padding para ajustar as margens */
+    padding-right: 10px;
+}
+
+/* Estilo para centralizar o conteúdo dentro do Div */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-left: 15px; /* Ajustar o padding para as margens laterais */
+    padding-right: 15px;
+}
+
+/* Ajuste de margens para os itens dentro do container */
+.container > * {
+    margin-left: 0;
+    margin-right: 0;
+}
