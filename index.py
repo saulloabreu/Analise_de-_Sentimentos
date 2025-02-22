@@ -165,9 +165,9 @@ def render_page_content(pathname):
                                             dbc.Col([
                                                 dcc.Graph(id = 'graph6', className = 'dbc', config = config_graph),
                                                 html.P([
-                                                    html.Span("“", style={'font-size': '30px', 'margin-left':'-50px'}),
-                                                    # html.Br(),
-                                                    "Nas avaliações positivas, os termos ",
+                                                    html.Span("”", style={'font-size': '30px', 'margin-left':'-50px'}),
+                                                    html.Br(),
+                                                    "Os termos ",
                                                     html.B("EQUIPE "), ", ",
                                                     html.B("Dr"), " e ",
                                                     html.B("TRATAMENTO "),
@@ -188,7 +188,7 @@ def render_page_content(pathname):
                                                     'background': 'white', 
                                                     'padding': '10px', 
                                                     'border-radius': '5px',
-                                                    'font-size':'14px', 
+                                                    'font-size':'12px', 
                                                     'color': 'black', 
                                                     'background-color': 'rgba(0, 0, 0, 0)'
                                                 }), 
@@ -211,9 +211,9 @@ def render_page_content(pathname):
                                             dbc.Col([
                                                 dcc.Graph(id = 'graph8', className = 'dbc', config = config_graph),
                                                 html.P([
-                                                    html.Span("“", style={'font-size': '30px', 'margin-left':'-50px'}),
-                                                    # html.Br(),
-                                                    "As avaliações negativas revelam críticas intensas ao ",
+                                                    html.Span("”", style={'font-size': '30px', 'margin-left':'0px'}),
+                                                    html.Br(),
+                                                    "As avaliações revelam críticas intensas ao ",
                                                     html.B("HOSPITAL"), ",  à ",
                                                     html.B("EQUIPE"), " e aos ",
                                                     html.B("MÈDICOS"), ". O termo ",
@@ -232,9 +232,9 @@ def render_page_content(pathname):
                                                     'background': 'white', 
                                                     'padding': '10px', 
                                                     'border-radius': '5px',
-                                                    'font-size':'14px', 
+                                                    'font-size':'12px', 
                                                     'color': 'black', 
-                                                    'background-color': 'rgba(0, 0, 0, 0)'
+                                                    'background-color': 'rgba(0, 0, 0,0)'
                                                 }), 
                                             ], sm = 12, md = 12)
                                         ], justify = 'center')
@@ -262,7 +262,7 @@ def render_page_content(pathname):
                     ], sm = 12, lg = 5), 
                     
                 ], className =' g-3 my-auto', style = {'margin-top':'3px'}), 
-            ], fluid=True, style={'height': '-40vh'})
+            ], fluid=True, style={'height': '-40vh', 'margin-bottom':'30px'})
         ])
     
 
@@ -861,7 +861,7 @@ def update_graph(dummy_value):
 
 
 if __name__ == "__main__":
-    app.run_server(port=8085, debug=True)
+    # app.run_server(port=8085, debug=True)
 
     # app.run_server(host='0.0.0.0', debug = True, port=int(os.environ.get('PORT', 8588)))
-    # app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8050)))
+    app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8150)))
