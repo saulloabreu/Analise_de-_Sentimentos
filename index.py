@@ -18,6 +18,8 @@ from collections import Counter
 
 
 
+# nltk.download('stopwords')
+
 '''=============================== Carregar os dados #==============================='''
 file_path = os.path.join(os.path.dirname(__file__), 'data', 'hospital_ptbr.csv')
 df = pd.read_csv(file_path)
@@ -156,7 +158,7 @@ def render_page_content(pathname):
                                     dbc.CardBody([
                                         dbc.Row(
                                             dbc.Col(
-                                                html.H4('Frequência das Palavras Positivas mais Comuns nos Feedbacks', style = {'textAlign':'center'})
+                                                html.H4('Frequência das Palavras Positivas nos Feedbacks', style = {'textAlign':'center'})
                                             )
                                         ), 
                                         dbc.Row([
@@ -177,7 +179,7 @@ def render_page_content(pathname):
                                                     html.Span("”", style={'font-size': '30px','margin-left':'200px'}
                                                             )
                                                 ], 
-                                                id='texto',
+                                                id='text_feddbacks_positivos',
                                                 style={
                                                     'position': 'absolute', 
                                                     'top': '28px',
@@ -202,7 +204,7 @@ def render_page_content(pathname):
                                     dbc.CardBody([
                                         dbc.Row(
                                             dbc.Col(
-                                                html.H4('Frequência das Palavras Negativas mais Comuns nos Feedbacks', style = {'textAlign':'center'})
+                                                html.H4('Frequência das Palavras Negativas nos Feedbacks', style = {'textAlign':'center'})
                                             )
                                         ),
                                         dbc.Row([
@@ -221,7 +223,7 @@ def render_page_content(pathname):
                                                     html.Br(),
                                                     html.Span("”", style={'font-size': '30px', 'margin-left':'130px'})
                                                 ], 
-                                                id='texto',
+                                                id='text_feddbacks_negativos',
                                                 style={
                                                     'position': 'absolute', 
                                                     'top': '28px',
@@ -262,6 +264,154 @@ def render_page_content(pathname):
                 ], className =' g-3 my-auto', style = {'margin-top':'3px'}), 
             ], fluid=True, style={'height': '-40vh'})
         ])
+    
+
+'''============================# Gráfico 1 #==================================='''
+def grafico_1(df):
+    # Carregar a imagem como máscara
+    mask = np.array(Image.open("assets/nuvem6.png").convert("L"))
+
+    # Transformar em uma máscara binária (0 para áreas vazias, 255 para preenchidas)
+    mask = np.where(mask > 128, 255, 0)
+
+    # Filtra os feedbacks positivos e negativos
+    df_pos = df [df["Sentiment Label"] == 1 ] ["Feedback_PT"]
+    # df_neg = df[df["Sentiment Label"] == 0]["Feedback_PT"]
+
+    # Lista personalizada de stopwords
+    stopwords_personalizadas = set(STOPWORDS)
+    stopwords_personalizadas.update(["de", "ou", "o", "as", "para", "há", 
+                                    "um", "uma", "dos","das", "com", "que", 
+                                    "ele", "como", "da", "é", "nos", "aos", 
+                                    "mais", "", "seu","sua", "já", "ter", "ser", 
+                                    "vai", "está", "são", "", "sim", 'os', 'eu', 
+                                    'por','eles', 'e', 'em', 'ao', 'se'
+                                    ])
+    
+    # Paleta de cores personalizada (azul e roxo)
+    colors = ['#0d0887', '#5b02a3', '#9a179b', 'orange', 'yellow']  # Tons de azul e roxo
+
+    # Função de cor para as palavras
+    def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+        return np.random.choice(colors)
+
+    # Função para gerar nuvem de palavras com máscara
+    def generate_wordcloud(text):
+        wordcloud = WordCloud(
+            width=1500,  # Aumentar a largura
+            height=800,  # Aumentar a altura
+            background_color="#F8BBD0",
+            stopwords=stopwords_personalizadas,
+            color_func = color_func,
+            max_words=150,
+            min_font_size=20,
+            max_font_size=150,
+            contour_color='#0d0887',
+            contour_width=10, 
+            mask=mask  # Adiciona a máscara da imagem
+        ).generate(" ".join(text))
+
+        # Converter a wordcloud em imagem
+        wordcloud_image = wordcloud.to_image().convert("RGB")
+        
+        # Convertendo a imagem para um formato que o Plotly possa exibir
+        fig = px.imshow(np.array(wordcloud_image))
+        fig.update_layout(
+            main_config,
+            autosize=True,
+            height=300,
+            margin=dict(l=0, r=0, t=0, b=0),  
+            xaxis=dict(
+                visible=False, 
+                showticklabels=False
+                       ),
+            yaxis=dict(
+                visible=False, 
+                showticklabels=False
+                ),
+            plot_bgcolor="#F8BBD0",  # Cor de fundo do gráfico
+            paper_bgcolor="#F8BBD0",  # Cor de fundo da área externa
+            hovermode=False
+            
+        )
+    
+        return fig
+
+    fig = generate_wordcloud(df_pos)
+    return fig
+
+'''============================# Gráfico 2 #==================================='''
+def grafico_2(df):
+    # Carregar a imagem como máscara
+    mask = np.array(Image.open("assets/nuvem6.png").convert("L"))
+
+    # Transformar em uma máscara binária (0 para áreas vazias, 255 para preenchidas)
+    mask = np.where(mask > 128, 255, 0)
+
+    # Filtra os feedbacks positivos e negativos
+    df_neg = df[df["Sentiment Label"] == 0]["Feedback_PT"]
+
+    # Lista personalizada de stopwords
+    stopwords_personalizadas = set(STOPWORDS)
+    stopwords_personalizadas.update(["de", "ou", "o", "as", "para", "há", 
+                                    "um", "uma", "dos","das", "com", "que", 
+                                    "ele", "como", "da", "é", "nos", "aos", 
+                                    "mais", "", "seu","sua", "já", "ter", "ser", 
+                                    "vai", "está", "são", "", "sim", 'os', 'eu', 
+                                    'por','eles', 'e', 'em', 'ao', 'se'
+                                    ])
+    
+    # Paleta de cores personalizada (azul e roxo)
+    colors = ['#0d0887', '#5b02a3', '#9a179b', '#e16462', 'yellow']  # Tons de azul e roxo
+
+    # Função de cor para as palavras
+    def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+        return np.random.choice(colors)
+
+    # Função para gerar nuvem de palavras com máscara
+    def generate_wordcloud(text):
+        wordcloud = WordCloud(
+            width=1500,
+            height=800,
+            background_color="#F8BBD0",
+            stopwords=stopwords_personalizadas,
+            color_func = color_func,
+            max_words=150,
+            min_font_size=20,
+            max_font_size=150,
+            contour_color='orange',
+            contour_width=10,
+            mask=mask  # Adiciona a máscara da imagem
+        ).generate(" ".join(text))
+
+        # Converter a wordcloud em imagem
+        wordcloud_image = wordcloud.to_image().convert("RGB")
+        
+        # Convertendo a imagem para um formato que o Plotly possa exibir
+        fig = px.imshow(np.array(wordcloud_image))
+        fig.update_layout(
+            main_config,
+            autosize=True,
+            height=300,
+            margin=dict(l=0, r=0, t=0, b=0),  # Zerar todas as margens
+            xaxis=dict(
+                visible=False, 
+                showticklabels=False,
+                ),
+            yaxis=dict(
+                visible=False, 
+                showticklabels=False, 
+                ),
+            plot_bgcolor="#F8BBD0",  # Cor de fundo do gráfico
+            paper_bgcolor="#F8BBD0",   # Cor de fundo da área externa
+            hovermode=False, 
+            
+        )
+    
+        return fig
+
+    fig = generate_wordcloud(df_neg)
+    return fig
 
 '''============================# Gráfico 3 #==================================='''
 def grafico_3 (df):
@@ -277,6 +427,8 @@ def grafico_3 (df):
                 text = 'count', 
                 color_discrete_sequence=colors
                 )
+    
+    fig.update_traces(hovertemplate="Avaliação:<b>%{label}</b><br>Valor: %{value}")
     fig.update_layout(
         main_config, 
         height = 230,
@@ -312,6 +464,45 @@ def grafico_3 (df):
         )
     )
 
+
+    return fig
+
+'''============================# Gráfico 4 #==================================='''
+def grafico_4(df):
+    df_c = df.copy()
+    # Ajustando o Sentiment Label com base nas Ratings
+    # As avaliações 4 e 5 são positivas, a 3 é neutra, e as outras são negativas
+    df_c['Sentiment Label'] = df_c['Ratings'].apply(
+        lambda x: 'positivos' if x in [4, 5] else ('neutros' if x == 3 else 'negativos')
+    )
+
+    sentiment_counts = df_c['Sentiment Label'].value_counts().reset_index()
+    sentiment_counts.columns = ['Sentiment Label', 'Count']
+
+    # Gerar uma paleta de cores "plasma"
+    colors = [
+        px.colors.sequential.Plasma[1], 
+        px.colors.sequential.Plasma[4], 
+        px.colors.sequential.Plasma[9]
+        ]
+
+    # Criar gráfico de pizza com um efeito 3D simulado
+    fig = px.pie(sentiment_counts, names='Sentiment Label', 
+                 values='Count', 
+                 hole = 0.4, 
+                 color_discrete_sequence=colors
+                 )
+    fig.update_traces(pull=[0.03, 0.03, 0.03, 0.03], hovertemplate="Sentimento:<b>%{label}</b><br>Valor: %{value}")  # Ajuste para destacar as fatias
+    fig.update_layout(
+        main_config,
+        height = 230, 
+        legend = dict( 
+            orientation="h",
+            font = dict(color = 'brown')
+            
+        )
+
+    )
 
     return fig
 
@@ -355,6 +546,7 @@ def grafico_5(df):
             insidetextanchor='middle',  # Centralizando o texto dentro das barras
         ))
 
+    fig.update_traces(hovertemplate="Sentimento:<b>%{label}</b><br>Valor: %{value}")
 
     # Ajustando o layout para exibir as barras corretamente
     fig.update_layout(
@@ -394,189 +586,77 @@ def grafico_5(df):
 
     return fig
 
-'''============================# Gráfico 1 #==================================='''
-def grafico_1(df):
-    # Carregar a imagem como máscara
-    mask = np.array(Image.open("assets/nuvem6.png").convert("L"))
-
-    # Transformar em uma máscara binária (0 para áreas vazias, 255 para preenchidas)
-    mask = np.where(mask > 128, 255, 0)
-
-    # Filtra os feedbacks positivos e negativos
-    df_pos = df [df["Sentiment Label"] == 1 ] ["Feedback_PT"]
-    # df_neg = df[df["Sentiment Label"] == 0]["Feedback_PT"]
-
-    # Lista personalizada de stopwords
-    stopwords_personalizadas = set(STOPWORDS)
-    stopwords_personalizadas.update(["de", "ou", "o", "as", "para", "há", 
-                                    "um", "uma", "dos","das", "com", "que", 
-                                    "ele", "como", "da", "é", "nos", "aos", 
-                                    "mais", "", "seu","sua", "já", "ter", "ser", 
-                                    "vai", "está", "são", "", "sim", 'os', 'eu', 
-                                    'por','eles', 'e', 'em', 'ao', 'se'
-                                    ])
+'''============================# Gráfico 6 #==================================='''
+def grafico_6(df):
     
-    # Paleta de cores personalizada (azul e roxo)
-    colors = ['#0d0887', '#5b02a3', '#9a179b', 'orange', 'yellow']  # Tons de azul e roxo
+    def analyze_sentiment_reviews(df):
+        # Filtrar avaliações positivas e negativas
+        positive_reviews = df[df['Sentiment Label'] == 1].copy()
+        negative_reviews = df[df['Sentiment Label'] == 0].copy()
 
-    # Função de cor para as palavras
-    def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-        return np.random.choice(colors)
+        # Função para pré-processamento dos textos
+        def preprocess_text(text):
+            # Converter para minúsculas
+            text = text.lower()
+            # Remover stopwords
+            stop_words = set(stopwords.words('portuguese'))
+            words = [word for word in text.split() if word not in stop_words]
+            return " ".join(words)
 
-    # Função para gerar nuvem de palavras com máscara
-    def generate_wordcloud(text):
-        wordcloud = WordCloud(
-            width=1500,  # Aumentar a largura
-            height=800,  # Aumentar a altura
-            background_color="#F8BBD0",
-            stopwords=stopwords_personalizadas,
-            color_func = color_func,
-            max_words=150,
-            min_font_size=20,
-            max_font_size=150,
-            contour_color='#0d0887',
-            contour_width=10,
-            mask=mask  # Adiciona a máscara da imagem
-        ).generate(" ".join(text))
+        # Aplicar o pré-processamento nas avaliações
+        positive_reviews['cleaned_feedback'] = positive_reviews['Feedback_PT'].apply(preprocess_text)
+        negative_reviews['cleaned_feedback'] = negative_reviews['Feedback_PT'].apply(preprocess_text)
 
-        # Converter a wordcloud em imagem
-        wordcloud_image = wordcloud.to_image().convert("RGB")
-        
-        # Convertendo a imagem para um formato que o Plotly possa exibir
-        fig = px.imshow(np.array(wordcloud_image))
-        fig.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
-        fig.update_layout(
-            main_config,
-            autosize=True,
-            height=300,
-            margin=dict(l=0, r=0, t=0, b=0),  # Zerar todas as margens
-            xaxis=dict(visible=False),
-            yaxis=dict(visible=False),
-            plot_bgcolor="#F8BBD0",  # Cor de fundo do gráfico
-            paper_bgcolor="#F8BBD0"  # Cor de fundo da área externa
-            
-        )
-    
-        return fig
+        # Contar frequência das palavras
+        def get_most_common_words(text_series, top_n=10):
+            all_words = " ".join(text_series).split()
+            word_counts = Counter(all_words)
+            return word_counts.most_common(top_n)
 
-    # # Gerar nuvem de palavras para feedbacks positivos
-    # generate_wordcloud(df_pos, "Nuvem de Palavras - Feedbacks Positivos")
+        # Obter palavras mais comuns e suas frequências
+        positive_common_words = get_most_common_words(positive_reviews['cleaned_feedback'])
+        negative_common_words = get_most_common_words(negative_reviews['cleaned_feedback'])
 
-    # Gerar nuvem de palavras para feedbacks negativos
-    # generate_wordcloud(df_neg, "Nuvem de Palavras - Feedbacks Negativos")
-    fig = generate_wordcloud(df_pos)
-    return fig
+        return positive_common_words, negative_common_words
 
-'''============================# Gráfico 4 #==================================='''
-def grafico_4(df):
-    df_c = df.copy()
-    # Ajustando o Sentiment Label com base nas Ratings
-    # As avaliações 4 e 5 são positivas, a 3 é neutra, e as outras são negativas
-    df_c['Sentiment Label'] = df_c['Ratings'].apply(
-        lambda x: 'positivos' if x in [4, 5] else ('neutros' if x == 3 else 'negativos')
-    )
+    # Supondo que você já tenha um DataFrame 'df' definido
+    positive_common_words, negative_common_words = analyze_sentiment_reviews(df)
 
-    sentiment_counts = df_c['Sentiment Label'].value_counts().reset_index()
-    sentiment_counts.columns = ['Sentiment Label', 'Count']
+    # Criar DataFrame a partir das palavras comuns positivas
+    positive_common_words_df = pd.DataFrame(positive_common_words, columns=['Palavras', 'Frequencia'])
 
-    # Gerar uma paleta de cores "plasma"
-    colors = [
-        px.colors.sequential.Plasma[1], 
-        px.colors.sequential.Plasma[4], 
-        px.colors.sequential.Plasma[9]
-        ]
+    # Criando o gráfico
+    fig = go.Figure()
 
-    # Criar gráfico de pizza com um efeito 3D simulado
-    fig = px.pie(sentiment_counts, names='Sentiment Label', 
-                 values='Count', 
-                 hole = 0.4, 
-                 color_discrete_sequence=colors
-                 )
-    fig.update_traces(pull=[0.03, 0.03, 0.03, 0.03])  # Ajuste para destacar as fatias
+    # Adicionando barras para palavras positivas
+    fig.add_trace(go.Bar(
+        x=positive_common_words_df['Frequencia'],
+        y=positive_common_words_df['Palavras'],
+        name="Positivas",
+        marker_color=px.colors.sequential.Plasma[1], 
+        text=positive_common_words_df['Frequencia'], 
+        orientation='h', 
+    ))
+
+    fig.update_traces(hovertemplate="<b>%{label}</b><br>Valor: %{value}") 
     fig.update_layout(
-        main_config,
-        height = 230, 
-        legend = dict( 
-            orientation="h",
-            font = dict(color = 'brown')
-            
-        )
+        main_config, 
+        height = 250, 
+        barmode="group",
+        font = dict(size = 15), 
+        yaxis = dict(
+            tickfont=dict(color='brown'),
+            title = ''
+        ), 
+        xaxis = dict(
+            title="Frequência",
+            showgrid = False, 
+            title_font = dict(color='brown'),
+            tickfont=dict(color='brown'),
 
+        ),     
     )
 
-    return fig
-
-'''============================# Gráfico 2 #==================================='''
-def grafico_2(df):
-    # Carregar a imagem como máscara
-    mask = np.array(Image.open("assets/nuvem6.png").convert("L"))
-
-    # Transformar em uma máscara binária (0 para áreas vazias, 255 para preenchidas)
-    mask = np.where(mask > 128, 255, 0)
-
-    # Filtra os feedbacks positivos e negativos
-    # df_pos = df [df["Sentiment Label"] == 1 ] ["Feedback_PT"]
-    df_neg = df[df["Sentiment Label"] == 0]["Feedback_PT"]
-
-    # Lista personalizada de stopwords
-    stopwords_personalizadas = set(STOPWORDS)
-    stopwords_personalizadas.update(["de", "ou", "o", "as", "para", "há", 
-                                    "um", "uma", "dos","das", "com", "que", 
-                                    "ele", "como", "da", "é", "nos", "aos", 
-                                    "mais", "", "seu","sua", "já", "ter", "ser", 
-                                    "vai", "está", "são", "", "sim", 'os', 'eu', 
-                                    'por','eles', 'e', 'em', 'ao', 'se'
-                                    ])
-    
-    # Paleta de cores personalizada (azul e roxo)
-    colors = ['#0d0887', '#5b02a3', '#9a179b', '#e16462', 'yellow']  # Tons de azul e roxo
-
-    # Função de cor para as palavras
-    def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-        return np.random.choice(colors)
-
-    # Função para gerar nuvem de palavras com máscara
-    def generate_wordcloud(text):
-        wordcloud = WordCloud(
-            # width=1000,
-            # height=400,
-            background_color="#F8BBD0",
-            stopwords=stopwords_personalizadas,
-            color_func = color_func,
-            max_words=150,
-            min_font_size=20,
-            max_font_size=150,
-            contour_color='orange',
-            contour_width=10,
-            mask=mask  # Adiciona a máscara da imagem
-        ).generate(" ".join(text))
-
-        # Converter a wordcloud em imagem
-        wordcloud_image = wordcloud.to_image().convert("RGB")
-        
-        # Convertendo a imagem para um formato que o Plotly possa exibir
-        fig = px.imshow(np.array(wordcloud_image))
-        fig.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
-        fig.update_layout(
-            main_config,
-            autosize=True,
-            height=300,
-            margin=dict(l=0, r=0, t=0, b=0),  # Zerar todas as margens
-            xaxis=dict(visible=False),
-            yaxis=dict(visible=False),
-            plot_bgcolor="#F8BBD0",  # Cor de fundo do gráfico
-            paper_bgcolor="#F8BBD0"  # Cor de fundo da área externa
-            
-        )
-    
-        return fig
-
-    # # Gerar nuvem de palavras para feedbacks positivos
-    # generate_wordcloud(df_pos, "Nuvem de Palavras - Feedbacks Positivos")
-
-    # Gerar nuvem de palavras para feedbacks negativos
-    # generate_wordcloud(df_neg, "Nuvem de Palavras - Feedbacks Negativos")
-    fig = generate_wordcloud(df_neg)
     return fig
 
 '''============================# Gráfico 7 #==================================='''
@@ -684,87 +764,10 @@ def grafico_7 (df):
 
     return fig
 
-'''============================# Gráfico 6 #==================================='''
-nltk.download('stopwords')
-
-def grafico_6(df):
-    
-    def analyze_sentiment_reviews(df):
-        # Filtrar avaliações positivas e negativas
-        positive_reviews = df[df['Sentiment Label'] == 1].copy()
-        negative_reviews = df[df['Sentiment Label'] == 0].copy()
-
-        # Função para pré-processamento dos textos
-        def preprocess_text(text):
-            # Converter para minúsculas
-            text = text.lower()
-            # Remover stopwords
-            stop_words = set(stopwords.words('portuguese'))
-            words = [word for word in text.split() if word not in stop_words]
-            return " ".join(words)
-
-        # Aplicar o pré-processamento nas avaliações
-        positive_reviews['cleaned_feedback'] = positive_reviews['Feedback_PT'].apply(preprocess_text)
-        negative_reviews['cleaned_feedback'] = negative_reviews['Feedback_PT'].apply(preprocess_text)
-
-        # Contar frequência das palavras
-        def get_most_common_words(text_series, top_n=10):
-            all_words = " ".join(text_series).split()
-            word_counts = Counter(all_words)
-            return word_counts.most_common(top_n)
-
-        # Obter palavras mais comuns e suas frequências
-        positive_common_words = get_most_common_words(positive_reviews['cleaned_feedback'])
-        negative_common_words = get_most_common_words(negative_reviews['cleaned_feedback'])
-
-        return positive_common_words, negative_common_words
-
-    # Supondo que você já tenha um DataFrame 'df' definido
-    positive_common_words, negative_common_words = analyze_sentiment_reviews(df)
-
-    # Criar DataFrame a partir das palavras comuns positivas
-    positive_common_words_df = pd.DataFrame(positive_common_words, columns=['Palavras', 'Frequencia'])
-
-    # Criando o gráfico
-    fig = go.Figure()
-
-    # Adicionando barras para palavras positivas
-    fig.add_trace(go.Bar(
-        x=positive_common_words_df['Frequencia'],
-        y=positive_common_words_df['Palavras'],
-        name="Positivas",
-        marker_color=px.colors.sequential.Plasma[1], 
-        text=positive_common_words_df['Frequencia'], 
-        orientation='h', 
-        # textposition='auto',  # Posição automática do texto
-        # textfont=dict(size=22),
-    ))
-
-    fig.update_traces(textfont=dict(size=22)) 
-    fig.update_layout(
-        main_config, 
-        height = 250, 
-        xaxis_title="Frequência",
-        yaxis_title="",
-        barmode="group",
-        font = dict(size = 15), 
-        yaxis = dict(
-            tickfont=dict(color='brown'),
-        ), 
-        xaxis = dict(
-            showgrid = False, 
-            title_font = dict(color='brown'),
-            tickfont=dict(color='brown'),
-
-        ),     
-    )
-
-    return fig
-
-'''============================# Gráfico 6 #==================================='''
+'''============================# Gráfico 8 #==================================='''
 def grafico_8(df):
     
-    def analyze_sentiment_reviews(df):
+    def analyze_sentiment_negative(df):
         # Filtrar avaliações positivas e negativas
         negative_reviews = df[df['Sentiment Label'] == 0].copy()
 
@@ -792,7 +795,7 @@ def grafico_8(df):
         return negative_common_words
 
     # Supondo que você já tenha um DataFrame 'df' definido
-    negative_common_words = analyze_sentiment_reviews(df)
+    negative_common_words = analyze_sentiment_negative(df)
 
     # Criar DataFrame a partir das palavras comuns positivas
     negative_common_words_df = pd.DataFrame(negative_common_words, columns=['Palavras', 'Frequencia'])
@@ -804,13 +807,13 @@ def grafico_8(df):
     fig.add_trace(go.Bar(
         x=negative_common_words_df['Frequencia'],
         y=negative_common_words_df['Palavras'],
-        name="Positivas",
+        name="Negativas",
         marker_color=px.colors.sequential.Plasma[8], 
         text=negative_common_words_df['Frequencia'], 
         orientation='h', 
     ))
 
-    fig.update_traces(marker=dict(line=dict(color=px.colors.sequential.Plasma[0], width=1))) 
+    fig.update_traces(marker=dict(line=dict(color=px.colors.sequential.Plasma[0], width=1, )),            hovertemplate="<b>%{label}</b><br>Valor: %{value}") 
     fig.update_layout(
         main_config, 
         height = 250, 
@@ -854,6 +857,8 @@ def update_graph(dummy_value):
         grafico_7(df), 
         grafico_8(df)
             )
+
+
 
 if __name__ == "__main__":
     app.run_server(port=8085, debug=True)

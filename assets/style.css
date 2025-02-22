@@ -4,6 +4,7 @@ body {
     padding: 0;
     height: 100%;
     background-color: #390b3b; /* Cor de fundo azul */
+    /* overflow: hidden; */
 }
 
 /* Garantir que a altura do conteúdo ocupe toda a tela */
@@ -28,4 +29,31 @@ html, body, .container {
 .container > * {
     margin-left: 0;
     margin-right: 0;
+}
+
+
+@media screen and (max-width: 1340px) {
+    #text_feddbacks_positivos,
+    #text_feddbacks_negativos {
+        display: none;  
+        visibility: hidden;  
+    }
+}
+
+@media screen and (min-width: 1534px) {
+    #container {
+        flex-direction: row; /* Ajuste para disposição horizontal */
+        justify-content: space-between; /* Espaço entre os elementos */
+    }
+
+    #text_feddbacks_positivos,
+    #text_feddbacks_negativos {
+        flex: 1; /* O texto ocupará uma fração do espaço */
+        margin-left: 250px; /* Espaço entre o texto e o gráfico */
+        font-size: 1rem; /* Ajuste do tamanho da fonte */
+    }
+
+    #grafico {
+        flex: 2; /* O gráfico ocupará mais espaço */
+    }
 }
