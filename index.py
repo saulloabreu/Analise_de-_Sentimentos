@@ -724,9 +724,9 @@ def grafico_7 (df):
             zerolinecolor = 'brown', 
             tickfont=dict(color='brown'),
             title_font = dict(color='brown'), 
-            showgrid=False, 
+            showgrid=True, 
             visible=True,
-            showline=True, 
+            showline=False, 
             zeroline=False, 
             linecolor='brown',
             linewidth=2,
@@ -760,7 +760,7 @@ def grafico_7 (df):
     fig.add_annotation(
         text=f"Média de Palavras Positivos: {mean_positive:.0f}",
         xref='paper', yref='paper',
-        x=0.98, y=0.90,
+        x=0.98, y=0.80,
         font=dict(size=12, color=px.colors.sequential.Plasma[9]),
         align='center',
         bgcolor='rgba(10, 10, 100, 0.5)',
@@ -780,7 +780,9 @@ def grafico_7 (df):
 
     return fig
 
-'''============================# Gráfico 8 #==================================='''
+
+
+# ============================# Gráfico 7 #===================================
 def grafico_8(df):
     
     def analyze_sentiment_negative(df):
