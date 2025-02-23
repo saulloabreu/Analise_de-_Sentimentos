@@ -714,8 +714,6 @@ def grafico_7 (df):
     fig.update_layout(
         main_config, 
         height=400,
-        # xaxis_title="Número de Palavras",
-        # yaxis_title="Frequência",
         legend_title="Feedback",
         hovermode='x unified',
         yaxis = dict(

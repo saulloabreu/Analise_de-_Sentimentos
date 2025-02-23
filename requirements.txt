@@ -9,3 +9,6 @@ Pillow
 nltk
 plotly_express
 werkzeug
+gunicorn
+flask-caching
+
