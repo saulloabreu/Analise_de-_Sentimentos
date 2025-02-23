@@ -162,35 +162,7 @@ def render_page_content(pathname):
                                         ), 
                                         dbc.Row([
                                             dbc.Col([
-                                                dcc.Graph(id = 'graph6', className = 'dbc', config = config_graph),
-                                                html.P([
-                                                    html.Span("”", style={'font-size': '30px', 'margin-left':'-50px'}),
-                                                    html.Br(),
-                                                    "Os termos ",
-                                                    html.B("EQUIPE "), ", ",
-                                                    html.B("Dr"), " e ",
-                                                    html.B("TRATAMENTO "),
-                                                    "destacam a qualidade ", 
-                                                    "do atendimento e o profissionalismo, além de um ambiente hospitalar positivo representado pelas palavras ",
-                                                    html.B("HOSPITAL"), " e ",
-                                                    html.B("BOM"),
-                                                    html.Br(), 
-                                                    html.Span("”", style={'font-size': '30px','margin-left':'200px'}
-                                                            )
-                                                ], 
-                                                id='text_feddbacks_positivos',
-                                                style={
-                                                    'position': 'absolute', 
-                                                    'top': '28px',
-                                                    'left': '460px' , 
-                                                    'right': '20px', 
-                                                    'background': 'white', 
-                                                    'padding': '10px', 
-                                                    'border-radius': '5px',
-                                                    'font-size':'12px', 
-                                                    'color': 'black', 
-                                                    'background-color': 'rgba(0, 0, 0, 0)'
-                                                }), 
+                                                dcc.Graph(id = 'graph6', className = 'dbc', config = config_graph), 
                                             ], sm = 12, md = 12)
                                         ], justify = 'center')
                                     ])
@@ -208,33 +180,7 @@ def render_page_content(pathname):
                                         ),
                                         dbc.Row([
                                             dbc.Col([
-                                                dcc.Graph(id = 'graph8', className = 'dbc', config = config_graph),
-                                                html.P([
-                                                    html.Span("”", style={'font-size': '30px', 'margin-left':'0px'}),
-                                                    html.Br(),
-                                                    "As avaliações revelam críticas intensas ao ",
-                                                    html.B("HOSPITAL"), ",  à ",
-                                                    html.B("EQUIPE"), " e aos ",
-                                                    html.B("MÈDICOS"), ". O termo ",
-                                                    html.B("PIOR"), " destaca experiências negativas, enquanto ",
-                                                    html.B("PACIENTES") , " e ",
-                                                    html.B("EXPERIÊNCIAS"), " sugerem insatisfações específicas relacionadas ao atendimento.",
-                                                    html.Br(),
-                                                    html.Span("”", style={'font-size': '30px', 'margin-left':'130px'})
-                                                ], 
-                                                id='text_feddbacks_negativos',
-                                                style={
-                                                    'position': 'absolute', 
-                                                    'top': '28px',
-                                                    'left': '460px' , 
-                                                    'right': '20px', 
-                                                    'background': 'white', 
-                                                    'padding': '10px', 
-                                                    'border-radius': '5px',
-                                                    'font-size':'12px', 
-                                                    'color': 'black', 
-                                                    'background-color': 'rgba(0, 0, 0,0)'
-                                                }), 
+                                                dcc.Graph(id = 'graph8', className = 'dbc', config = config_graph), 
                                             ], sm = 12, md = 12)
                                         ], justify = 'center')
                                     ])
@@ -535,39 +481,36 @@ def grafico_5(df):
     for i, rating in enumerate(ratings):
         df_rating = df_grouped[df_grouped['Ratings'] == rating]
         fig.add_trace(go.Bar(
-            x=df_rating['Sentiment Label'],  # Sentimento
-            y=df_rating['count'],  # Contagem das notas
-            name=f"{rating}",  # Nome da legenda
-            marker=dict(color=custom_colors[i % len(custom_colors)]),  
-            # marker=dict(color=f'rgba({rating * 50}, {255 - rating * 50}, 180, 20.6)'),  
-            text=df_rating['count'],  # Corrigindo para que o 'text' seja a contagem do rating atual
-            textposition='inside',  # Colocando os valores dentro da barra
-            insidetextanchor='middle',  # Centralizando o texto dentro das barras
+            x=df_rating['Sentiment Label'], 
+            y=df_rating['count'], 
+            name=f"{rating}",  
+            marker=dict(color=custom_colors[i % len(custom_colors)]),    
+            text=df_rating['count'],  
+            textposition='inside',  
+            insidetextanchor='middle',  
         ))
 
     fig.update_traces(hovertemplate="Sentimento:<b>%{label}</b><br>Valor: %{value}")
-
-    # Ajustando o layout para exibir as barras corretamente
     fig.update_layout(
         main_config, 
         height =180, 
-        barmode="stack",  # Empilhamento das barras
+        barmode="stack",  
         legend=dict(
             traceorder='normal',
-            itemsizing='constant',  # Mantém o tamanho consistente na legenda
-            title="Ratings", 
+            itemsizing='constant',  
+            title="Avaliações", 
             title_font = dict(color = 'brown'),
             font = dict(size=13, family='Arial', color='brown'),
         ),
         xaxis=dict(
             tickmode='array',
-            tickvals=[0, 1, 2],  # Exibe apenas os valores 0 e 1 no eixo X
+            tickvals=[0, 1, 2],  
             ticktext=['negativos', 'neutros', 'positivos'],  
             tickfont=dict(color='brown'), 
-            zeroline=False,  # Remove a linha do zero
+            zeroline=False,  
             visible=True,
             showline=True,
-            linecolor='brown',  # Cor da linha
+            linecolor='brown',  
             linewidth=2,
             title_font=dict(color='brown'), 
             
@@ -575,8 +518,8 @@ def grafico_5(df):
         ),
         yaxis=dict(
             showline=False,
-            showgrid=False,  # Remove a grade (linhas horizontais)
-            zeroline=False,  # Remove a linha do zero
+            showgrid=False,  
+            zeroline=False,  
             showticklabels=False, 
             title_font=dict(color='brown'), 
             title = '',
@@ -748,6 +691,7 @@ def grafico_7 (df):
         legend = dict(
             title = 'Feedbacks', 
             title_font = dict(color = 'brown'),
+            font = dict(size=13, family='Arial', color='brown'),
 
         ), 
         hoverlabel=dict(
@@ -770,7 +714,7 @@ def grafico_7 (df):
     fig.add_annotation(
         text=f"Média de Palavras Negativos: {mean_negative:.0f}",
         xref='paper', yref='paper',
-        x=1.12, y=0.60,
+        x=1.12, y=0.65,
         font=dict(size=12, color=px.colors.sequential.Plasma[0]),
         align='center',
         bgcolor='rgba(255, 204, 0, 0.5)',
