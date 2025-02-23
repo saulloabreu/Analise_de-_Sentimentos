@@ -17,8 +17,7 @@ from nltk.corpus import stopwords
 from collections import Counter
 
 
-
-# nltk.download('stopwords')
+nltk.download('stopwords')
 
 '''=============================== Carregar os dados #==============================='''
 file_path = os.path.join(os.path.dirname(__file__), 'data', 'hospital_ptbr.csv')
@@ -158,7 +157,7 @@ def render_page_content(pathname):
                                     dbc.CardBody([
                                         dbc.Row(
                                             dbc.Col(
-                                                html.H4('Frequência das Palavras Positivas nos Feedbacks', style = {'textAlign':'center'})
+                                                html.H4('Frequência de Palavras nos Feedbacks Positivas', style = {'textAlign':'center'})
                                             )
                                         ), 
                                         dbc.Row([
@@ -204,7 +203,7 @@ def render_page_content(pathname):
                                     dbc.CardBody([
                                         dbc.Row(
                                             dbc.Col(
-                                                html.H4('Frequência das Palavras Negativas nos Feedbacks', style = {'textAlign':'center'})
+                                                html.H4('Frequência de Palavras nos Feedbacks Negativas', style = {'textAlign':'center'})
                                             )
                                         ),
                                         dbc.Row([
@@ -425,7 +424,7 @@ def grafico_3 (df):
                 x = 'ratings', 
                 y = 'count', 
                 text = 'count', 
-                color_discrete_sequence=colors
+                color_discrete_sequence=colors, 
                 )
     
     fig.update_traces(hovertemplate="Avaliação:<b>%{label}</b><br>Valor: %{value}")
@@ -434,7 +433,7 @@ def grafico_3 (df):
         height = 230,
         showlegend=False, 
         plot_bgcolor='rgba(0,0,0,0)', 
-        paper_bgcolor='rgba(0,0,0,0)', 
+        paper_bgcolor='rgba(0,0,0,0)',        
         yaxis=dict(
             showgrid=True,  
             zeroline=False,  
@@ -445,7 +444,7 @@ def grafico_3 (df):
             linecolor='brown',  
             linewidth=2,
             gridcolor='brown', 
-            griddash='dot', 
+            griddash="dot", 
             gridwidth=1,
         ), 
         xaxis=dict(
@@ -461,7 +460,7 @@ def grafico_3 (df):
             tickwidth=2,
             ticklen=2,
             zerolinecolor='red', 
-        )
+        ), 
     )
 
 
@@ -558,7 +557,7 @@ def grafico_5(df):
             itemsizing='constant',  # Mantém o tamanho consistente na legenda
             title="Ratings", 
             title_font = dict(color = 'brown'),
-            font=dict(size=13, weight='bold', family='Arial', color='brown'),
+            font = dict(size=13, family='Arial', color='brown'),
         ),
         xaxis=dict(
             tickmode='array',
@@ -691,40 +690,57 @@ def grafico_7 (df):
 
     # Adicionando a linha para feedbacks positivos
     fig.add_trace(go.Scatter(x=positive_counts.index, y=positive_counts.values, mode='lines',
-                            line=dict(color=positive_colors), name='Positivos', 
+                            line=dict(color=positive_colors,  width=3), name='Positivos', 
+                            hovertemplate='Número de palavras: %{x}<br>Positivo: %{y}<extra></extra>', 
+                            
                             ))
+    # Adicionando a sombra para feedbacks positivos com maior deslocamento e largura
+    fig.add_trace(go.Scatter(x=positive_counts.index, y=positive_counts.values + 1.0,  
+                            line=dict(color='rgba(44, 3, 145, 0.2)', width=10),  
+                            showlegend=False,  hoverinfo='none'))
 
     # Adicionando a linha para feedbacks negativos
     fig.add_trace(go.Scatter(x=negative_counts.index, y=negative_counts.values, mode='lines',
-                            line=dict(color=negative_colors), name='Negativos',
+                            line=dict(color=negative_colors, width=3), name='Negativos',
+                            hovertemplate='Negativo: %{y}<extra></extra>'
                             ))
+    # Adicionando a sombra para feedbacks negativos com maior deslocamento e largura
+    fig.add_trace(go.Scatter(x=negative_counts.index, y=negative_counts.values + 1.0,
+                            line=dict(color='rgba(255, 204, 10, 0.3)', width=10),  
+                            showlegend=False, 
+                            hoverinfo='none'))
 
     # Ajustes finais no layout
     fig.update_layout(
         main_config, 
-        # width=1005, 
         height=400,
-        # title="Distribuição de Palavras nos Feedbacks",
-        xaxis_title="Número de Palavras",
-        yaxis_title="Frequência",
+        # xaxis_title="Número de Palavras",
+        # yaxis_title="Frequência",
         legend_title="Feedback",
         hovermode='x unified',
         yaxis = dict(
+            title="Frequência",
             gridcolor='brown', 
             griddash='dot', 
             gridwidth=1,
             zerolinecolor = 'brown', 
             tickfont=dict(color='brown'),
             title_font = dict(color='brown'), 
-            showgrid=True, 
+            showgrid=False, 
+            visible=True,
+            showline=True, 
+            zeroline=False, 
+            linecolor='brown',
+            linewidth=2,
         ), 
         xaxis =dict(
+            title="Número de Palavras",
             showspikes=True, 
             spikemode='across', 
             spikecolor='brown', 
             zeroline=False,  
             visible=True,
-            showline=False,
+            showline=True,
             showgrid = False, 
             linecolor='brown',  
             linewidth=2,
@@ -732,12 +748,14 @@ def grafico_7 (df):
             title_font = dict(color='brown'), 
         ), 
         legend = dict(
-            title = 'Feedbacks'
+            title = 'Feedbacks', 
+            title_font = dict(color = 'brown'),
+
         ), 
         hoverlabel=dict(
             bgcolor='rgba(57, 11, 59, 0.99)',  
             font_size=12,            
-            font_color="white" 
+            font_color="white",             
         )
     )
 
@@ -745,7 +763,7 @@ def grafico_7 (df):
         text=f"Média de Palavras Positivos: {mean_positive:.0f}",
         xref='paper', yref='paper',
         x=0.98, y=0.90,
-        font=dict(size=15, color=px.colors.sequential.Plasma[9]),
+        font=dict(size=12, color=px.colors.sequential.Plasma[9]),
         align='center',
         bgcolor='rgba(10, 10, 100, 0.5)',
         showarrow=False
@@ -755,7 +773,7 @@ def grafico_7 (df):
         text=f"Média de Palavras Negativos: {mean_negative:.0f}",
         xref='paper', yref='paper',
         x=1.12, y=0.60,
-        font=dict(size=15, color=px.colors.sequential.Plasma[0]),
+        font=dict(size=12, color=px.colors.sequential.Plasma[0]),
         align='center',
         bgcolor='rgba(255, 204, 0, 0.5)',
         showarrow=False
@@ -861,7 +879,5 @@ def update_graph(dummy_value):
 
 
 if __name__ == "__main__":
-    # app.run_server(port=8085, debug=True)
-
-    
+    # app.run_server(port=8150, debug=True)
     app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8150)))
