@@ -17,11 +17,11 @@ from nltk.corpus import stopwords
 from collections import Counter
 import flask_caching
 from flask_caching import Cache
-from nltk.corpus import stopwords
 
 
 
-
+# Especifique o caminho para a pasta do seu projeto atual
+nltk.data.path.append('/home/black_d/Downloads/Dash_Bourds_Python/New_Project_dashboard/data/nltk_data')
 stop_words = set(stopwords.words('portuguese'))
 
 '''=============================== Carregar os dados #==============================='''
@@ -736,8 +736,6 @@ def grafico_7 (df):
 
     return fig
 
-
-
 # ============================# Gráfico 7 #===================================
 def grafico_8(df):
     
@@ -836,4 +834,4 @@ def update_graph(dummy_value):
 
 if __name__ == "__main__":
     # app.run_server(port=8150, debug=True)
-    app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8150)))
+    app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
