@@ -1,21 +1,21 @@
-# Usar uma imagem menor para reduzir o tamanho do container
-FROM python:3.9-alpine
+# Usar uma imagem menor baseada em Alpine
+FROM python:3.9-slim
 
 # Definir diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos do projeto
-COPY . /app/
+# Copiar apenas os arquivos essenciais para instalar dependências primeiro
+COPY requirements.txt /app/
 
 # Atualizar pip e instalar dependências sem cache
-RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Expor a porta em que o app rodará
+# Copiar o restante dos arquivos
+COPY . /app/
+
+# Expor a porta onde o app será executado
 EXPOSE 8150
 
-# Adicionar um healthcheck para verificar se o app está rodando
-HEALTHCHECK CMD curl --fail http://localhost:8150 || exit 1
-
-
-# Definir o comando para rodar o app
-CMD ["python", "index.py"]
+# Definir comando para rodar o app
+CMD ["gunicorn", "-b", "0.0.0.0:8150", "index:server"]

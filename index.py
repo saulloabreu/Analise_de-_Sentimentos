@@ -15,13 +15,25 @@ from PIL import Image
 import nltk
 from nltk.corpus import stopwords
 from collections import Counter
+import flask_caching
+from flask_caching import Cache
+from nltk.corpus import stopwords
 
 
-nltk.download('stopwords')
+
+
+stop_words = set(stopwords.words('portuguese'))
 
 '''=============================== Carregar os dados #==============================='''
-file_path = os.path.join(os.path.dirname(__file__), 'data', 'hospital_ptbr.csv')
-df = pd.read_csv(file_path)
+# Configuração do cache para armazenar os dados
+cache = Cache(app.server, config={"CACHE_TYPE": "simple"})
+
+@cache.memoize()
+def load_data():
+    file_path = os.path.join(os.path.dirname(__file__), 'data', 'hospital_ptbr.csv')
+    return pd.read_csv(file_path)
+
+df = load_data()
 
 ''' ============================# config_style #================================'''
 tab_card = {'height':'100%', 
