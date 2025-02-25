@@ -20,9 +20,11 @@ from flask_caching import Cache
 
 
 
-# Especifique o caminho para a pasta do seu projeto atual
+
 nltk.data.path.append('/home/black_d/Downloads/Dash_Bourds_Python/New_Project_dashboard/data')
+nltk.download('stopwords')
 stop_words = set(stopwords.words('portuguese'))
+
 
 '''=============================== Carregar os dados #==============================='''
 # Configuração do cache para armazenar os dados
